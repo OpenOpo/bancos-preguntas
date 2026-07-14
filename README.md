@@ -2,6 +2,45 @@
 
 Banco abierto de preguntas tipo test para la preparación de oposiciones, disponible para uso no comercial.
 
+## OpenOpo.es
+
+Este banco forma parte del proyecto **OpenOpo.es**, una iniciativa para hacer más accesible la preparación de oposiciones mediante contenido abierto, gratuito y reutilizable para fines no comerciales.
+
+Los valores del proyecto son:
+
+- **Accesibilidad:** facilitar que cualquier opositor pueda estudiar con materiales claros y disponibles.
+- **Apertura:** publicar bancos de preguntas en formatos sencillos, descargables y revisables.
+- **Gratuidad del contenido:** OpenOpo.es no cobrará nunca por el contenido de las preguntas publicado en este repositorio.
+
+OpenOpo.es sí podrá cobrar por la **organización, ordenación, herramientas, filtros avanzados, experiencia de uso, mantenimiento, soporte o servicios añadidos** construidos alrededor de ese contenido. Es decir: el contenido permanece gratuito; lo que puede ser de pago es la capa de organización o servicio.
+
+## Fuentes
+
+Las preguntas se elaboran a partir de documentos públicos y accesibles, como textos legales, normativa consolidada, boletines oficiales, temarios públicos o referencias administrativas disponibles públicamente.
+
+Cuando una pregunta incorpora referencias normativas, el CSV puede incluir campos de fuente como `source_excerpt`, `source_url`, `source_version` o equivalentes. Los textos legales, disposiciones administrativas y documentos públicos citados conservan su régimen jurídico propio y no quedan apropiados por este proyecto.
+
+## Licencia resumida
+
+Salvo que se indique lo contrario, las preguntas, explicaciones, clasificaciones y organización del banco se publican bajo **Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)**.
+
+Puedes:
+
+- Estudiar gratuitamente con las preguntas.
+- Descargar, copiar y compartir el banco para fines no comerciales.
+- Adaptar el formato para uso personal, educativo gratuito o comunitario no comercial.
+- Corregir, mejorar o reutilizar preguntas si mantienes la atribución y la misma condición no comercial.
+
+No puedes, sin autorización previa:
+
+- Vender las preguntas o recopilaciones que las contengan.
+- Usarlas en cursos, academias, preparaciones, aplicaciones, plataformas o servicios de pago.
+- Monetizarlas mediante publicidad, patrocinios, afiliación, suscripciones o captación comercial.
+- Presentarlas como propias o eliminar la atribución.
+- Usarlas para entrenar, desarrollar o mejorar productos o servicios comerciales, incluidos sistemas de inteligencia artificial.
+
+El resumen anterior no sustituye al aviso completo de licencia incluido más abajo.
+
 ## Visor web
 
 Este repositorio incluye un visor estático de bancos de preguntas. Puede publicarse directamente con GitHub Pages porque no necesita base de datos ni backend: el navegador carga `index.html`, lee `preguntas/manifest.json` y descarga los CSV de `preguntas/` bajo demanda.

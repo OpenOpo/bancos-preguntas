@@ -19,6 +19,14 @@
     .app { max-width:1200px; margin:auto; padding:20px; }
     h1 { margin:0 0 6px; font-size:clamp(1.5rem,3vw,2.1rem); }
     .subtitle { margin:0 0 18px; color:var(--muted); }
+    .brand-band {
+      display:grid; gap:6px; margin:0 0 14px; padding:12px 14px;
+      border:1px solid #bdd1ee; border-radius:10px; background:#f7fbff;
+    }
+    .brand-band strong { color:var(--primary); }
+    .brand-band a { color:var(--primary); font-weight:750; text-decoration:none; }
+    .brand-band a:hover { text-decoration:underline; }
+    .brand-band p { margin:0; color:#34445f; line-height:1.45; }
     .panel {
       background:var(--panel); border:1px solid var(--line);
       border-radius:14px; box-shadow:0 8px 24px rgba(20,35,70,.07);
@@ -98,6 +106,8 @@
     aside { display:flex; flex-direction:column; gap:14px; }
     aside .panel { padding:14px; }
     aside h2 { font-size:1rem; margin:0 0 10px; }
+    aside a { color:var(--primary); text-decoration:none; font-weight:650; }
+    aside a:hover { text-decoration:underline; }
     .nav { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .file-list { max-height:260px; overflow:auto; font-size:.88rem; }
     .file-row {
@@ -122,6 +132,11 @@
 <main class="app">
   <h1>Visor de bancos de preguntas</h1>
   <p class="subtitle">Carga las preguntas desde los CSV publicados en la carpeta <code>preguntas</code>.</p>
+
+  <section class="brand-band" aria-label="OpenOpo">
+    <p><strong>OpenOpo.es</strong> es un proyecto de contenido accesible, abierto y gratuito para opositores.</p>
+    <p>El contenido de las preguntas no se cobrará nunca; OpenOpo.es podrá cobrar por herramientas, ordenación, organización o servicios añadidos sobre ese contenido.</p>
+  </section>
 
   <div class="top-actions">
     <button class="primary" id="rescan">Volver a escanear la carpeta</button>
@@ -196,6 +211,12 @@
         <h2>Bancos detectados</h2>
         <div class="file-list" id="fileList"></div>
         <p class="small">Copia nuevos archivos dentro de <code>preguntas/</code> y actualiza <code>manifest.json</code>.</p>
+      </section>
+      <section class="panel">
+        <h2>Licencia y fuentes</h2>
+        <p class="small">Preguntas publicadas para uso no comercial bajo CC BY-NC 4.0. Puedes estudiar, descargar y compartir atribuyendo la autoría.</p>
+        <p class="small">No se permite vender, monetizar, revender ni usar este banco en servicios comerciales sin autorización.</p>
+        <p class="small">Las preguntas se elaboran a partir de documentos públicos y accesibles. Más información en <a href="https://openopo.es" target="_blank" rel="noopener">OpenOpo.es</a>.</p>
       </section>
     </aside>
   </div>
