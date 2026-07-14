@@ -32,9 +32,16 @@
       font-size:.76rem; font-weight:750; color:var(--muted);
       text-transform:uppercase; letter-spacing:.04em;
     }
+    label a {
+      color:var(--primary); text-decoration:none; margin-left:6px;
+    }
+    label a:hover { text-decoration:underline; }
     select,input[type=search] {
       width:100%; border:1px solid var(--line); border-radius:8px;
       padding:9px 10px; background:white; color:var(--text);
+    }
+    select:disabled {
+      color:#8a94a6; background:#f1f4f8; cursor:not-allowed;
     }
     button {
       border:1px solid var(--line); border-radius:8px; background:white;
@@ -121,20 +128,20 @@
       <select id="bank"><option value="__all__">Todos los bancos</option></select>
     </div>
     <div class="field">
-      <label for="article">Artículo</label>
-      <select id="article"><option value="">Todos</option></select>
+      <label for="article">Artículo <a href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+      <select id="article" disabled><option value="">Disponible en premium</option></select>
     </div>
     <div class="field">
-      <label for="difficulty">Dificultad</label>
-      <select id="difficulty"><option value="">Todas</option></select>
+      <label for="difficulty">Dificultad <a href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+      <select id="difficulty" disabled><option value="">Disponible en premium</option></select>
     </div>
     <div class="field">
-      <label for="family">Familia</label>
-      <select id="family"><option value="">Todas</option></select>
+      <label for="family">Familia <a href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+      <select id="family" disabled><option value="">Disponible en premium</option></select>
     </div>
     <div class="field">
-      <label for="task">Tipo</label>
-      <select id="task"><option value="">Todos</option></select>
+      <label for="task">Tipo <a href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+      <select id="task" disabled><option value="">Disponible en premium</option></select>
     </div>
     <div class="field">
       <label for="search">Buscar</label>
@@ -205,6 +212,7 @@
   const MANIFEST_URL = `${DATA_DIR}/manifest.json`;
   const BANK_NAME_MARKER = "_banco";
   const HIERARCHY_SEPARATOR = "__";
+  const GROUP_PREFIX = "__group__:";
 
   const $ = id => document.getElementById(id);
   const els = {
@@ -261,6 +269,57 @@
   function bankTitle(file) {
     if(file?.title) return file.title;
     return bankHierarchy(file).join(" / ");
+  }
+
+  function hierarchyKey(parts) {
+    return parts.map(norm).join("/");
+  }
+
+  function fileMatchesGroup(file, groupKey) {
+    const fileKey=hierarchyKey(bankHierarchy(file));
+    return fileKey===groupKey || fileKey.startsWith(`${groupKey}/`);
+  }
+
+  function buildBankOptions(files) {
+    const options=[];
+    const sorted=[...files].sort((a,b)=>bankTitle(a).localeCompare(bankTitle(b),"es",{numeric:true}));
+    const groupCounts=new Map();
+    const groupLabels=new Map();
+
+    for(const file of sorted) {
+      const hierarchy=bankHierarchy(file);
+      for(let level=1; level<hierarchy.length; level++) {
+        const parts=hierarchy.slice(0,level);
+        const key=hierarchyKey(parts);
+        groupCounts.set(key,(groupCounts.get(key) || 0)+1);
+        groupLabels.set(key,parts);
+      }
+    }
+
+    const emitted=new Set();
+    for(const file of sorted) {
+      const hierarchy=bankHierarchy(file);
+      for(let level=1; level<hierarchy.length; level++) {
+        const parts=hierarchy.slice(0,level);
+        const key=hierarchyKey(parts);
+        if(emitted.has(key) || groupCounts.get(key)<2) continue;
+        emitted.add(key);
+        options.push({
+          value:`${GROUP_PREFIX}${key}`,
+          label:parts[parts.length-1],
+          depth:level-1,
+          title:parts.join(" / "),
+        });
+      }
+      options.push({
+        value:file.path,
+        label:hierarchy[hierarchy.length-1] || bankTitle(file),
+        depth:Math.max(0,hierarchy.length-1),
+        title:file.path,
+      });
+    }
+
+    return options;
   }
 
   function detectDelimiter(text) {
@@ -366,9 +425,12 @@
         : `<div class="error">No hay CSV en la carpeta preguntas.</div>`;
 
       els.bank.innerHTML='<option value="__all__">Todos los bancos</option>';
-      for(const file of state.files) {
+      for(const item of buildBankOptions(state.files)) {
         const option=document.createElement("option");
-        option.value=file.path; option.textContent=bankTitle(file); option.title=file.path; els.bank.appendChild(option);
+        option.value=item.value;
+        option.textContent=`${"\u00a0\u00a0".repeat(item.depth)}${item.label}`;
+        option.title=item.title;
+        els.bank.appendChild(option);
       }
 
       state.rowsByFile.clear();
@@ -395,16 +457,17 @@
       if(value === "__all__") {
         const batches=await Promise.all(state.files.map(loadFile));
         rows=batches.flat();
+      } else if(value.startsWith(GROUP_PREFIX)) {
+        const groupKey=value.slice(GROUP_PREFIX.length);
+        const files=state.files.filter(file=>fileMatchesGroup(file,groupKey));
+        const batches=await Promise.all(files.map(loadFile));
+        rows=batches.flat();
       } else {
         const file=state.files.find(f=>f.path===value);
         rows=file ? await loadFile(file) : [];
       }
       state.rows=rows;
       state.index=0;
-      fill(els.article,rows.map(q=>q.article),"Todos",{numeric:true});
-      fill(els.difficulty,rows.map(q=>q.difficulty),"Todas",{numeric:true});
-      fill(els.family,rows.map(q=>q.family),"Todas",{normalizedValue:true});
-      fill(els.task,rows.map(q=>q.task),"Todos",{normalizedValue:true});
       applyFilters(false);
       els.loading.textContent="Listo";
     } catch(error) {
@@ -419,10 +482,10 @@
     const current=preserve && state.filtered[state.index] ? state.filtered[state.index].id : null;
     const query=norm(els.search.value);
     state.filtered=state.rows.filter(q=>{
-      if(els.article.value && q.article!==els.article.value) return false;
-      if(els.difficulty.value && q.difficulty!==els.difficulty.value) return false;
-      if(els.family.value && norm(q.family)!==els.family.value) return false;
-      if(els.task.value && norm(q.task)!==els.task.value) return false;
+      if(!els.article.disabled && els.article.value && q.article!==els.article.value) return false;
+      if(!els.difficulty.disabled && els.difficulty.value && q.difficulty!==els.difficulty.value) return false;
+      if(!els.family.disabled && els.family.value && norm(q.family)!==els.family.value) return false;
+      if(!els.task.disabled && els.task.value && norm(q.task)!==els.task.value) return false;
       if(query) {
         const hay=norm([q.id,q.file,q.statement,...Object.values(q.options),q.explanation,q.source].join(" "));
         if(!hay.includes(query)) return false;

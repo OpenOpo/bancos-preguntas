@@ -28,6 +28,8 @@ python server.py
 
 El servidor local se abre en `http://127.0.0.1:8000` y sirve `preguntas/manifest.json` dinámicamente, por lo que permite añadir o quitar CSV durante el trabajo local y pulsar "Volver a escanear" en el visor.
 
+La versión pública permite seleccionar bancos y buscar texto. Los filtros por artículo, dificultad, familia y tipo quedan reservados para la versión premium enlazada desde el visor.
+
 ### Añadir preguntas
 
 1. Copia los nuevos archivos `.csv` dentro de `preguntas/`.
@@ -55,6 +57,8 @@ Se mostrará como:
 ```text
 Administrativo / Ley 39 2015 / Procedimiento Comun
 ```
+
+En el selector del visor, los niveles superiores aparecen como opciones padre. Si seleccionas `Administrativo`, se cargan todos los bancos que cuelgan de ese nivel; si seleccionas `Ley 39 2015`, solo se cargan sus hijos.
 
 Los archivos antiguos sin `__` siguen funcionando: todo lo que aparece antes de `_banco` se muestra como un único nivel.
 
