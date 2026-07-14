@@ -1,0 +1,79 @@
+﻿{
+    "files":  [
+                  {
+                      "path":  "ce_articulos_1_9_banco_180_editorial_v2.csv",
+                      "name":  "ce_articulos_1_9_banco_180_editorial_v2.csv",
+                      "size_bytes":  146894
+                  },
+                  {
+                      "path":  "ce_titulo_i_banco_628_editorial_v2.csv",
+                      "name":  "ce_titulo_i_banco_628_editorial_v2.csv",
+                      "size_bytes":  712854
+                  },
+                  {
+                      "path":  "ce_titulo_iv_banco_232_editorial_v2.csv",
+                      "name":  "ce_titulo_iv_banco_232_editorial_v2.csv",
+                      "size_bytes":  217273
+                  },
+                  {
+                      "path":  "ce_titulo_v_banco_232_editorial_v2.csv",
+                      "name":  "ce_titulo_v_banco_232_editorial_v2.csv",
+                      "size_bytes":  188981
+                  },
+                  {
+                      "path":  "eacv_titulo_i_banco_168.csv",
+                      "name":  "eacv_titulo_i_banco_168.csv",
+                      "size_bytes":  188414
+                  },
+                  {
+                      "path":  "eacv_titulo_ii_banco_316.csv",
+                      "name":  "eacv_titulo_ii_banco_316.csv",
+                      "size_bytes":  413067
+                  },
+                  {
+                      "path":  "eacv_titulo_iii_banco_616.csv",
+                      "name":  "eacv_titulo_iii_banco_616.csv",
+                      "size_bytes":  803051
+                  },
+                  {
+                      "path":  "eacv_titulo_iv_banco_548.csv",
+                      "name":  "eacv_titulo_iv_banco_548.csv",
+                      "size_bytes":  607068
+                  },
+                  {
+                      "path":  "ley_31_1995_capitulos_i_iii_banco_508.csv",
+                      "name":  "ley_31_1995_capitulos_i_iii_banco_508.csv",
+                      "size_bytes":  1129478
+                  },
+                  {
+                      "path":  "ley_39_2015_titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
+                      "name":  "ley_39_2015_titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
+                      "size_bytes":  6292260
+                  },
+                  {
+                      "path":  "ley_4_2021_titulos_i_iii_v_vi_banco_1600.csv",
+                      "name":  "ley_4_2021_titulos_i_iii_v_vi_banco_1600.csv",
+                      "size_bytes":  3731817
+                  },
+                  {
+                      "path":  "ley_40_2015_titulo_preliminar_capitulos_i_ii_banco_352.csv",
+                      "name":  "ley_40_2015_titulo_preliminar_capitulos_i_ii_banco_352.csv",
+                      "size_bytes":  508839
+                  },
+                  {
+                      "path":  "ley_5_1983_consell_bloque_a_banco_880.csv",
+                      "name":  "ley_5_1983_consell_bloque_a_banco_880.csv",
+                      "size_bytes":  1640705
+                  },
+                  {
+                      "path":  "ley_5_1983_consell_bloque_b_banco_292.csv",
+                      "name":  "ley_5_1983_consell_bloque_b_banco_292.csv",
+                      "size_bytes":  565902
+                  },
+                  {
+                      "path":  "lo_3_2007_titulo_preliminar_i_banco_324.csv",
+                      "name":  "lo_3_2007_titulo_preliminar_i_banco_324.csv",
+                      "size_bytes":  660259
+                  }
+              ]
+}

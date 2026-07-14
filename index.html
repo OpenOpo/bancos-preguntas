@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visor de preguntas GVA C1</title>
+  <style>
+    :root {
+      --bg:#f3f5f8; --panel:#fff; --line:#d8dee8; --text:#172033;
+      --muted:#667085; --primary:#174ea6; --primary-soft:#e9f1ff;
+      --ok:#176b3a; --ok-soft:#e7f6ec; --bad:#a4252c; --bad-soft:#fdebed;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:var(--bg); color:var(--text);
+    }
+    button,select,input { font:inherit; }
+    .app { max-width:1200px; margin:auto; padding:20px; }
+    h1 { margin:0 0 6px; font-size:clamp(1.5rem,3vw,2.1rem); }
+    .subtitle { margin:0 0 18px; color:var(--muted); }
+    .panel {
+      background:var(--panel); border:1px solid var(--line);
+      border-radius:14px; box-shadow:0 8px 24px rgba(20,35,70,.07);
+    }
+    .toolbar {
+      display:grid; grid-template-columns:2fr repeat(4,1fr) auto;
+      gap:10px; padding:14px; margin-bottom:14px;
+    }
+    .field { display:flex; flex-direction:column; gap:5px; min-width:0; }
+    label {
+      font-size:.76rem; font-weight:750; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.04em;
+    }
+    select,input[type=search] {
+      width:100%; border:1px solid var(--line); border-radius:8px;
+      padding:9px 10px; background:white; color:var(--text);
+    }
+    button {
+      border:1px solid var(--line); border-radius:8px; background:white;
+      padding:9px 12px; cursor:pointer;
+    }
+    button:hover { border-color:#91acd4; }
+    .primary { background:var(--primary); color:white; border-color:var(--primary); }
+    .top-actions { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:14px; }
+    .status {
+      display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; color:var(--muted);
+    }
+    .pill {
+      background:white; border:1px solid var(--line); border-radius:999px;
+      padding:6px 10px; font-size:.9rem;
+    }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:14px; }
+    .question { padding:22px; min-height:520px; }
+    .meta { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:15px; }
+    .tag {
+      padding:5px 8px; border-radius:999px; background:#eef2f7;
+      border:1px solid var(--line); font-size:.78rem; color:#45536a;
+    }
+    .statement { font-size:1.3rem; line-height:1.46; margin:0 0 18px; }
+    .options { display:grid; gap:10px; }
+    .option {
+      width:100%; display:grid; grid-template-columns:34px 1fr; gap:9px;
+      text-align:left; align-items:start; padding:12px; border-radius:10px;
+    }
+    .letter {
+      display:grid; place-items:center; width:28px; height:28px;
+      border-radius:7px; background:#edf1f7; font-weight:800;
+    }
+    .option.selected { background:var(--primary-soft); border-color:var(--primary); }
+    .option.correct { background:var(--ok-soft); border-color:#77bd90; }
+    .option.wrong { background:var(--bad-soft); border-color:#df8c92; }
+    .answer {
+      margin-top:16px; padding:14px; border-radius:10px;
+      border:1px solid #9fd1b0; background:var(--ok-soft);
+    }
+    .answer[hidden] { display:none; }
+    .answer strong { color:var(--ok); }
+    .answer p { margin:6px 0; line-height:1.45; }
+    .question-actions {
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;
+      padding-top:15px; border-top:1px solid var(--line);
+    }
+    aside { display:flex; flex-direction:column; gap:14px; }
+    aside .panel { padding:14px; }
+    aside h2 { font-size:1rem; margin:0 0 10px; }
+    .nav { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .file-list { max-height:260px; overflow:auto; font-size:.88rem; }
+    .file-row {
+      padding:7px 0; border-bottom:1px solid #edf0f4; overflow-wrap:anywhere;
+    }
+    .empty { padding:50px 20px; text-align:center; color:var(--muted); }
+    .hidden { display:none; }
+    .error { color:var(--bad); background:var(--bad-soft); padding:10px; border-radius:8px; }
+    .small { font-size:.83rem; color:var(--muted); line-height:1.4; }
+    @media(max-width:900px) {
+      .toolbar { grid-template-columns:1fr 1fr; }
+      .layout { grid-template-columns:1fr; }
+    }
+    @media(max-width:560px) {
+      .app { padding:11px; }
+      .toolbar { grid-template-columns:1fr; }
+      .question { padding:15px; }
+    }
+  </style>
+</head>
+<body>
+<main class="app">
+  <h1>Visor de preguntas GVA C1</h1>
+  <p class="subtitle">Carga las preguntas desde los CSV publicados en la carpeta <code>preguntas</code>.</p>
+
+  <div class="top-actions">
+    <button class="primary" id="rescan">Volver a escanear la carpeta</button>
+    <button id="loadAll">Cargar todos los bancos</button>
+    <button id="random">Pregunta aleatoria</button>
+  </div>
+
+  <section class="panel toolbar">
+    <div class="field">
+      <label for="bank">Banco / archivo</label>
+      <select id="bank"><option value="__all__">Todos los bancos</option></select>
+    </div>
+    <div class="field">
+      <label for="article">Artículo</label>
+      <select id="article"><option value="">Todos</option></select>
+    </div>
+    <div class="field">
+      <label for="difficulty">Dificultad</label>
+      <select id="difficulty"><option value="">Todas</option></select>
+    </div>
+    <div class="field">
+      <label for="family">Familia</label>
+      <select id="family"><option value="">Todas</option></select>
+    </div>
+    <div class="field">
+      <label for="task">Tipo</label>
+      <select id="task"><option value="">Todos</option></select>
+    </div>
+    <div class="field">
+      <label for="search">Buscar</label>
+      <input id="search" type="search" placeholder="Enunciado, opción o explicación">
+    </div>
+  </section>
+
+  <div class="status">
+    <span class="pill"><strong id="fileCount">0</strong> bancos encontrados</span>
+    <span class="pill"><strong id="questionCount">0</strong> preguntas cargadas</span>
+    <span class="pill"><strong id="visibleCount">0</strong> visibles</span>
+    <span class="pill" id="loadingStatus">Preparando...</span>
+  </div>
+
+  <div class="layout">
+    <section class="panel question">
+      <div id="empty" class="empty">No hay preguntas cargadas.</div>
+      <div id="content" class="hidden">
+        <div class="meta" id="meta"></div>
+        <h2 class="statement" id="statement"></h2>
+        <div class="options" id="options"></div>
+        <div class="answer" id="answer" hidden>
+          <strong id="answerTitle"></strong>
+          <p id="explanation"></p>
+          <p class="small" id="source"></p>
+        </div>
+        <div class="question-actions">
+          <button class="primary" id="reveal">Mostrar respuesta</button>
+          <button id="previous">Anterior</button>
+          <button id="next">Siguiente</button>
+        </div>
+      </div>
+    </section>
+
+    <aside>
+      <section class="panel">
+        <h2>Navegación</h2>
+        <div class="nav">
+          <button id="first">Primera</button>
+          <button id="last">Última</button>
+        </div>
+        <p class="small" id="counter">0 de 0</p>
+      </section>
+      <section class="panel">
+        <h2>Bancos detectados</h2>
+        <div class="file-list" id="fileList"></div>
+        <p class="small">Copia nuevos archivos dentro de <code>preguntas/</code> y actualiza <code>manifest.json</code>.</p>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const state = {
+    files: [],
+    rowsByFile: new Map(),
+    rows: [],
+    filtered: [],
+    index: 0,
+    selected: null,
+    revealed: false,
+  };
+
+  const DATA_DIR = "preguntas";
+  const MANIFEST_URL = `${DATA_DIR}/manifest.json`;
+
+  const $ = id => document.getElementById(id);
+  const els = {
+    rescan:$("rescan"), loadAll:$("loadAll"), random:$("random"),
+    bank:$("bank"), article:$("article"), difficulty:$("difficulty"),
+    family:$("family"), task:$("task"), search:$("search"),
+    fileCount:$("fileCount"), questionCount:$("questionCount"),
+    visibleCount:$("visibleCount"), loading:$("loadingStatus"),
+    empty:$("empty"), content:$("content"), meta:$("meta"),
+    statement:$("statement"), options:$("options"), answer:$("answer"),
+    answerTitle:$("answerTitle"), explanation:$("explanation"), source:$("source"),
+    reveal:$("reveal"), previous:$("previous"), next:$("next"),
+    first:$("first"), last:$("last"), counter:$("counter"), fileList:$("fileList"),
+  };
+
+  const aliases = {
+    id:["question_id","id"], article:["article","articulo","artículo"],
+    paragraph:["paragraph","apartado"], difficulty:["difficulty","dificultad"],
+    family:["family","familia"], task:["selection_task","tarea","tipo"],
+    statement:["statement","enunciado","pregunta"],
+    a:["option_a","opcion_a","opción_a","a"],
+    b:["option_b","opcion_b","opción_b","b"],
+    c:["option_c","opcion_c","opción_c","c"],
+    d:["option_d","opcion_d","opción_d","d"],
+    correct:["correct_option","correcta","respuesta","respuesta_correcta"],
+    explanation:["explanation","explicacion","explicación"],
+    source:["source_excerpt","base_normativa"], sourceUrl:["source_url","fuente"],
+  };
+
+  function norm(value) {
+    return String(value || "").trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/\s+/g,"_");
+  }
+
+  function pretty(value) {
+    return String(value || "").replace(/_/g," ")
+      .replace(/\b\w/g,c=>c.toUpperCase());
+  }
+
+  function detectDelimiter(text) {
+    const first = text.split(/\r?\n/).find(x=>x.trim()) || "";
+    const options = [",",";","\t"].map(d=>[d,(first.split(d).length-1)]);
+    return options.sort((a,b)=>b[1]-a[1])[0][0];
+  }
+
+  function parseCsv(text) {
+    text = String(text || "").replace(/^\uFEFF/,"");
+    const delimiter = detectDelimiter(text);
+    const rows=[]; let row=[], value="", quoted=false;
+    for(let i=0;i<text.length;i++) {
+      const ch=text[i], next=text[i+1];
+      if(quoted) {
+        if(ch === '"' && next === '"') { value+='"'; i++; }
+        else if(ch === '"') quoted=false;
+        else value+=ch;
+      } else if(ch === '"') quoted=true;
+      else if(ch === delimiter) { row.push(value); value=""; }
+      else if(ch === "\n") { row.push(value.replace(/\r$/,"")); rows.push(row); row=[]; value=""; }
+      else value+=ch;
+    }
+    if(value.length || row.length) { row.push(value.replace(/\r$/,"")); rows.push(row); }
+    return rows.filter(r=>r.some(v=>String(v).trim()));
+  }
+
+  function findIndex(headers, names) {
+    const normalized=headers.map(norm);
+    for(const name of names) {
+      const i=normalized.indexOf(norm(name));
+      if(i>=0) return i;
+    }
+    return -1;
+  }
+
+  function mapCsv(matrix, filePath) {
+    if(matrix.length<2) return [];
+    const headers=matrix[0];
+    const idx={};
+    for(const [key,names] of Object.entries(aliases)) idx[key]=findIndex(headers,names);
+
+    for(const required of ["statement","a","b","c","d","correct"]) {
+      if(idx[required]<0) throw new Error(`${filePath}: falta la columna ${required}`);
+    }
+
+    const value=(row,key)=>idx[key]>=0 ? String(row[idx[key]] ?? "").trim() : "";
+    return matrix.slice(1).map((row,n)=>({
+      id:value(row,"id") || `${filePath}:${n+2}`,
+      file:filePath,
+      article:value(row,"article"),
+      paragraph:value(row,"paragraph"),
+      difficulty:value(row,"difficulty"),
+      family:value(row,"family"),
+      task:value(row,"task"),
+      statement:value(row,"statement"),
+      options:{A:value(row,"a"),B:value(row,"b"),C:value(row,"c"),D:value(row,"d")},
+      correct:value(row,"correct").toUpperCase(),
+      explanation:value(row,"explanation"),
+      source:value(row,"source"),
+      sourceUrl:value(row,"sourceUrl"),
+    })).filter(q=>q.statement && ["A","B","C","D"].includes(q.correct));
+  }
+
+  function unique(values, numeric=false) {
+    return [...new Set(values.filter(Boolean))].sort((a,b)=>
+      numeric ? Number(a)-Number(b) : String(a).localeCompare(String(b),"es",{numeric:true})
+    );
+  }
+
+  function fill(select, values, label, numeric=false) {
+    const current=select.value;
+    select.innerHTML=`<option value="">${label}</option>`;
+    for(const value of unique(values,numeric)) {
+      const option=document.createElement("option");
+      option.value=value; option.textContent=pretty(value); select.appendChild(option);
+    }
+    if([...select.options].some(o=>o.value===current)) select.value=current;
+  }
+
+  function resetQuestion() {
+    state.selected=null; state.revealed=false;
+  }
+
+  async function scanFiles() {
+    els.loading.textContent="Escaneando carpeta...";
+    try {
+      const response=await fetch(MANIFEST_URL,{cache:"no-store"});
+      if(!response.ok) throw new Error("No se pudo consultar la carpeta.");
+      const payload=await response.json();
+      state.files=payload.files || [];
+      els.fileCount.textContent=state.files.length;
+      els.fileList.innerHTML=state.files.length
+        ? state.files.map(f=>`<div class="file-row">${f.path}<br><span class="small">${Math.round(f.size_bytes/1024)} KB</span></div>`).join("")
+        : `<div class="error">No hay CSV en la carpeta preguntas.</div>`;
+
+      els.bank.innerHTML='<option value="__all__">Todos los bancos</option>';
+      for(const file of state.files) {
+        const option=document.createElement("option");
+        option.value=file.path; option.textContent=file.path; els.bank.appendChild(option);
+      }
+
+      state.rowsByFile.clear();
+      await loadSelection("__all__");
+    } catch(error) {
+      els.loading.textContent="Error";
+      els.fileList.innerHTML=`<div class="error">${error.message}</div>`;
+    }
+  }
+
+  async function loadFile(file) {
+    if(state.rowsByFile.has(file.path)) return state.rowsByFile.get(file.path);
+    const response=await fetch(`${DATA_DIR}/${file.path}`,{cache:"no-store"});
+    if(!response.ok) throw new Error(`No se pudo cargar ${file.path}`);
+    const rows=mapCsv(parseCsv(await response.text()),file.path);
+    state.rowsByFile.set(file.path,rows);
+    return rows;
+  }
+
+  async function loadSelection(value) {
+    els.loading.textContent="Cargando preguntas...";
+    try {
+      let rows=[];
+      if(value === "__all__") {
+        const batches=await Promise.all(state.files.map(loadFile));
+        rows=batches.flat();
+      } else {
+        const file=state.files.find(f=>f.path===value);
+        rows=file ? await loadFile(file) : [];
+      }
+      state.rows=rows;
+      state.index=0;
+      fill(els.article,rows.map(q=>q.article),"Todos",true);
+      fill(els.difficulty,rows.map(q=>q.difficulty),"Todas",true);
+      fill(els.family,rows.map(q=>q.family),"Todas");
+      fill(els.task,rows.map(q=>q.task),"Todos");
+      applyFilters(false);
+      els.loading.textContent="Listo";
+    } catch(error) {
+      state.rows=[]; state.filtered=[];
+      els.loading.textContent="Error al cargar";
+      els.empty.textContent=error.message;
+      render();
+    }
+  }
+
+  function applyFilters(preserve=true) {
+    const current=preserve && state.filtered[state.index] ? state.filtered[state.index].id : null;
+    const query=norm(els.search.value);
+    state.filtered=state.rows.filter(q=>{
+      if(els.article.value && q.article!==els.article.value) return false;
+      if(els.difficulty.value && q.difficulty!==els.difficulty.value) return false;
+      if(els.family.value && q.family!==els.family.value) return false;
+      if(els.task.value && q.task!==els.task.value) return false;
+      if(query) {
+        const hay=norm([q.id,q.file,q.statement,...Object.values(q.options),q.explanation,q.source].join(" "));
+        if(!hay.includes(query)) return false;
+      }
+      return true;
+    });
+    const found=current ? state.filtered.findIndex(q=>q.id===current) : -1;
+    state.index=found>=0 ? found : 0;
+    resetQuestion();
+    render();
+  }
+
+  function current() { return state.filtered[state.index] || null; }
+
+  function tag(text) {
+    const span=document.createElement("span"); span.className="tag"; span.textContent=text; return span;
+  }
+
+  function render() {
+    els.questionCount.textContent=state.rows.length;
+    els.visibleCount.textContent=state.filtered.length;
+    const q=current();
+    els.empty.classList.toggle("hidden",Boolean(q));
+    els.content.classList.toggle("hidden",!q);
+    if(!q) {
+      els.empty.textContent=state.rows.length ? "No hay preguntas con estos filtros." : "No hay preguntas cargadas.";
+      els.counter.textContent="0 de 0";
+      return;
+    }
+
+    els.meta.replaceChildren();
+    [
+      q.file, q.article && `Art. ${q.article}${q.paragraph ? "."+q.paragraph : ""}`,
+      q.difficulty && `Dificultad ${q.difficulty}`, q.family && pretty(q.family),
+      q.task && pretty(q.task), q.id
+    ].filter(Boolean).forEach(x=>els.meta.appendChild(tag(x)));
+
+    els.statement.textContent=q.statement;
+    els.options.replaceChildren();
+    for(const letter of ["A","B","C","D"]) {
+      const button=document.createElement("button");
+      button.className="option";
+      if(state.selected===letter) button.classList.add("selected");
+      if(state.revealed && letter===q.correct) button.classList.add("correct");
+      if(state.revealed && state.selected===letter && letter!==q.correct) button.classList.add("wrong");
+      button.innerHTML=`<span class="letter">${letter}</span><span></span>`;
+      button.lastElementChild.textContent=q.options[letter];
+      button.onclick=()=>{ state.selected=letter; render(); };
+      els.options.appendChild(button);
+    }
+
+    els.answer.hidden=!state.revealed;
+    els.reveal.textContent=state.revealed ? "Ocultar respuesta" : "Mostrar respuesta";
+    if(state.revealed) {
+      els.answerTitle.textContent=`Respuesta correcta: ${q.correct}`;
+      els.explanation.textContent=q.explanation || "Sin explicación.";
+      els.source.textContent=q.source ? `Base normativa: ${q.source}` : "";
+    }
+
+    els.counter.textContent=`${state.index+1} de ${state.filtered.length}`;
+    els.previous.disabled=state.index<=0;
+    els.first.disabled=state.index<=0;
+    els.next.disabled=state.index>=state.filtered.length-1;
+    els.last.disabled=state.index>=state.filtered.length-1;
+  }
+
+  function go(index) {
+    if(!state.filtered.length) return;
+    state.index=Math.max(0,Math.min(index,state.filtered.length-1));
+    resetQuestion(); render(); window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  els.rescan.onclick=scanFiles;
+  els.loadAll.onclick=()=>{ els.bank.value="__all__"; loadSelection("__all__"); };
+  els.random.onclick=()=>state.filtered.length && go(Math.floor(Math.random()*state.filtered.length));
+  els.bank.onchange=()=>loadSelection(els.bank.value);
+  [els.article,els.difficulty,els.family,els.task].forEach(x=>x.onchange=()=>applyFilters());
+  let timer;
+  els.search.oninput=()=>{ clearTimeout(timer); timer=setTimeout(()=>applyFilters(),150); };
+  els.reveal.onclick=()=>{ state.revealed=!state.revealed; render(); };
+  els.previous.onclick=()=>go(state.index-1);
+  els.next.onclick=()=>go(state.index+1);
+  els.first.onclick=()=>go(0);
+  els.last.onclick=()=>go(state.filtered.length-1);
+
+  document.addEventListener("keydown",event=>{
+    if(["INPUT","SELECT"].includes(document.activeElement?.tagName)) return;
+    if(event.key==="ArrowLeft") go(state.index-1);
+    if(event.key==="ArrowRight") go(state.index+1);
+    if(event.key.toLowerCase()==="r") { state.revealed=!state.revealed; render(); }
+    if(["1","2","3","4"].includes(event.key)) {
+      state.selected=["A","B","C","D"][Number(event.key)-1]; render();
+    }
+  });
+
+  scanFiles();
+})();
+</script>
+</body>
+</html>
