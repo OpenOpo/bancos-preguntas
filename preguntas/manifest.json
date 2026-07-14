@@ -1,155 +1,155 @@
 {
-    "files":  [
-                  {
-                      "path":  "ce__preliminar_banco_180_editorial_v2.csv",
-                      "name":  "ce__preliminar_banco_180_editorial_v2.csv",
-                      "title":  "CE / Preliminar",
-                      "hierarchy":  [
-                                        "CE",
-                                        "Preliminar"
-                                    ],
-                      "size_bytes":  146894
-                  },
-                  {
-                      "path":  "ce__titulo_i_banco_628_editorial_v2.csv",
-                      "name":  "ce__titulo_i_banco_628_editorial_v2.csv",
-                      "title":  "CE / Titulo I",
-                      "hierarchy":  [
-                                        "CE",
-                                        "Titulo I"
-                                    ],
-                      "size_bytes":  712854
-                  },
-                  {
-                      "path":  "ce__titulo_iv_banco_232_editorial_v2.csv",
-                      "name":  "ce__titulo_iv_banco_232_editorial_v2.csv",
-                      "title":  "CE / Titulo IV",
-                      "hierarchy":  [
-                                        "CE",
-                                        "Titulo IV"
-                                    ],
-                      "size_bytes":  217273
-                  },
-                  {
-                      "path":  "ce__titulo_v_banco_232_editorial_v2.csv",
-                      "name":  "ce__titulo_v_banco_232_editorial_v2.csv",
-                      "title":  "CE / Titulo V",
-                      "hierarchy":  [
-                                        "CE",
-                                        "Titulo V"
-                                    ],
-                      "size_bytes":  188981
-                  },
-                  {
-                      "path":  "eacv__titulo_i_banco_168.csv",
-                      "name":  "eacv__titulo_i_banco_168.csv",
-                      "title":  "EACV / Titulo I",
-                      "hierarchy":  [
-                                        "EACV",
-                                        "Titulo I"
-                                    ],
-                      "size_bytes":  188414
-                  },
-                  {
-                      "path":  "eacv__titulo_ii_banco_316.csv",
-                      "name":  "eacv__titulo_ii_banco_316.csv",
-                      "title":  "EACV / Titulo II",
-                      "hierarchy":  [
-                                        "EACV",
-                                        "Titulo II"
-                                    ],
-                      "size_bytes":  413067
-                  },
-                  {
-                      "path":  "eacv__titulo_iii_banco_616.csv",
-                      "name":  "eacv__titulo_iii_banco_616.csv",
-                      "title":  "EACV / Titulo III",
-                      "hierarchy":  [
-                                        "EACV",
-                                        "Titulo III"
-                                    ],
-                      "size_bytes":  803051
-                  },
-                  {
-                      "path":  "eacv__titulo_iv_banco_548.csv",
-                      "name":  "eacv__titulo_iv_banco_548.csv",
-                      "title":  "EACV / Titulo IV",
-                      "hierarchy":  [
-                                        "EACV",
-                                        "Titulo IV"
-                                    ],
-                      "size_bytes":  607068
-                  },
-                  {
-                      "path":  "ley_31_1995__capitulos_i_iii_banco_508.csv",
-                      "name":  "ley_31_1995__capitulos_i_iii_banco_508.csv",
-                      "title":  "Ley 31 1995 / Capitulos I III",
-                      "hierarchy":  [
-                                        "Ley 31 1995",
-                                        "Capitulos I III"
-                                    ],
-                      "size_bytes":  1129478
-                  },
-                  {
-                      "path":  "ley_39_2015__titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
-                      "name":  "ley_39_2015__titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
-                      "title":  "Ley 39 2015 / Titulos Preliminar I II III IV",
-                      "hierarchy":  [
-                                        "Ley 39 2015",
-                                        "Titulos Preliminar I II III IV"
-                                    ],
-                      "size_bytes":  6292260
-                  },
-                  {
-                      "path":  "ley_4_2021__titulos_i_iii_v_vi_banco_1600.csv",
-                      "name":  "ley_4_2021__titulos_i_iii_v_vi_banco_1600.csv",
-                      "title":  "Ley 4 2021 / Titulos I III V VI",
-                      "hierarchy":  [
-                                        "Ley 4 2021",
-                                        "Titulos I III V VI"
-                                    ],
-                      "size_bytes":  3731817
-                  },
-                  {
-                      "path":  "ley_40_2015__titulo_preliminar__capitulos_i_ii_banco_352.csv",
-                      "name":  "ley_40_2015__titulo_preliminar__capitulos_i_ii_banco_352.csv",
-                      "title":  "Ley 40 2015 / Titulo Preliminar / Capitulos I II",
-                      "hierarchy":  [
-                                        "Ley 40 2015",
-                                        "Titulo Preliminar",
-                                        "Capitulos I II"
-                                    ],
-                      "size_bytes":  508839
-                  },
-                  {
-                      "path":  "ley_5_1983_consell__bloque_a_banco_880.csv",
-                      "name":  "ley_5_1983_consell__bloque_a_banco_880.csv",
-                      "title":  "Ley 5 1983 Consell / Bloque A",
-                      "hierarchy":  [
-                                        "Ley 5 1983 Consell",
-                                        "Bloque A"
-                                    ],
-                      "size_bytes":  1640705
-                  },
-                  {
-                      "path":  "ley_5_1983_consell__bloque_b_banco_292.csv",
-                      "name":  "ley_5_1983_consell__bloque_b_banco_292.csv",
-                      "title":  "Ley 5 1983 Consell / Bloque B",
-                      "hierarchy":  [
-                                        "Ley 5 1983 Consell",
-                                        "Bloque B"
-                                    ],
-                      "size_bytes":  565902
-                  },
-                  {
-                      "path":  "lo_3_2007__titulo_preliminar_i_banco_324.csv",
-                      "name":  "lo_3_2007__titulo_preliminar_i_banco_324.csv",
-                      "title":  "LO 3 2007 / Titulo Preliminar I",
-                      "hierarchy":  [
-                                        "LO 3 2007",
-                                        "Titulo Preliminar I"
-                                    ],
-                      "size_bytes":  660259
-                  }
-              ]
+  "files": [
+    {
+      "path": "CE/preliminar_banco_180_editorial_v2.csv",
+      "name": "preliminar_banco_180_editorial_v2.csv",
+      "title": "CE / Preliminar",
+      "hierarchy": [
+        "CE",
+        "Preliminar"
+      ],
+      "size_bytes": 146894
+    },
+    {
+      "path": "CE/titulo_i_banco_628_editorial_v2.csv",
+      "name": "titulo_i_banco_628_editorial_v2.csv",
+      "title": "CE / Titulo I",
+      "hierarchy": [
+        "CE",
+        "Titulo I"
+      ],
+      "size_bytes": 712854
+    },
+    {
+      "path": "CE/titulo_iv_banco_232_editorial_v2.csv",
+      "name": "titulo_iv_banco_232_editorial_v2.csv",
+      "title": "CE / Titulo IV",
+      "hierarchy": [
+        "CE",
+        "Titulo IV"
+      ],
+      "size_bytes": 217273
+    },
+    {
+      "path": "CE/titulo_v_banco_232_editorial_v2.csv",
+      "name": "titulo_v_banco_232_editorial_v2.csv",
+      "title": "CE / Titulo V",
+      "hierarchy": [
+        "CE",
+        "Titulo V"
+      ],
+      "size_bytes": 188981
+    },
+    {
+      "path": "EACV/titulo_i_banco_168.csv",
+      "name": "titulo_i_banco_168.csv",
+      "title": "EACV / Titulo I",
+      "hierarchy": [
+        "EACV",
+        "Titulo I"
+      ],
+      "size_bytes": 188414
+    },
+    {
+      "path": "EACV/titulo_ii_banco_316.csv",
+      "name": "titulo_ii_banco_316.csv",
+      "title": "EACV / Titulo II",
+      "hierarchy": [
+        "EACV",
+        "Titulo II"
+      ],
+      "size_bytes": 413067
+    },
+    {
+      "path": "EACV/titulo_iii_banco_616.csv",
+      "name": "titulo_iii_banco_616.csv",
+      "title": "EACV / Titulo III",
+      "hierarchy": [
+        "EACV",
+        "Titulo III"
+      ],
+      "size_bytes": 803051
+    },
+    {
+      "path": "EACV/titulo_iv_banco_548.csv",
+      "name": "titulo_iv_banco_548.csv",
+      "title": "EACV / Titulo IV",
+      "hierarchy": [
+        "EACV",
+        "Titulo IV"
+      ],
+      "size_bytes": 607068
+    },
+    {
+      "path": "Ley 31 1995/capitulos_i_iii_banco_508.csv",
+      "name": "capitulos_i_iii_banco_508.csv",
+      "title": "Ley 31 1995 / Capitulos I III",
+      "hierarchy": [
+        "Ley 31 1995",
+        "Capitulos I III"
+      ],
+      "size_bytes": 1129478
+    },
+    {
+      "path": "Ley 39 2015/titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
+      "name": "titulos_preliminar_i_ii_iii_iv_banco_ampliado_2604.csv",
+      "title": "Ley 39 2015 / Titulos Preliminar I II III IV",
+      "hierarchy": [
+        "Ley 39 2015",
+        "Titulos Preliminar I II III IV"
+      ],
+      "size_bytes": 6292260
+    },
+    {
+      "path": "Ley 4 2021/titulos_i_iii_v_vi_banco_1600.csv",
+      "name": "titulos_i_iii_v_vi_banco_1600.csv",
+      "title": "Ley 4 2021 / Titulos I III V VI",
+      "hierarchy": [
+        "Ley 4 2021",
+        "Titulos I III V VI"
+      ],
+      "size_bytes": 3731817
+    },
+    {
+      "path": "Ley 40 2015/titulo_preliminar__capitulos_i_ii_banco_352.csv",
+      "name": "titulo_preliminar__capitulos_i_ii_banco_352.csv",
+      "title": "Ley 40 2015 / Titulo Preliminar / Capitulos I II",
+      "hierarchy": [
+        "Ley 40 2015",
+        "Titulo Preliminar",
+        "Capitulos I II"
+      ],
+      "size_bytes": 508839
+    },
+    {
+      "path": "Ley 5 1983 Consell/bloque_a_banco_880.csv",
+      "name": "bloque_a_banco_880.csv",
+      "title": "Ley 5 1983 Consell / Bloque A",
+      "hierarchy": [
+        "Ley 5 1983 Consell",
+        "Bloque A"
+      ],
+      "size_bytes": 1640705
+    },
+    {
+      "path": "Ley 5 1983 Consell/bloque_b_banco_292.csv",
+      "name": "bloque_b_banco_292.csv",
+      "title": "Ley 5 1983 Consell / Bloque B",
+      "hierarchy": [
+        "Ley 5 1983 Consell",
+        "Bloque B"
+      ],
+      "size_bytes": 565902
+    },
+    {
+      "path": "LO 3 2007/titulo_preliminar_i_banco_324.csv",
+      "name": "titulo_preliminar_i_banco_324.csv",
+      "title": "LO 3 2007 / Titulo Preliminar I",
+      "hierarchy": [
+        "LO 3 2007",
+        "Titulo Preliminar I"
+      ],
+      "size_bytes": 660259
+    }
+  ]
 }

@@ -75,31 +75,35 @@ La versión pública permite seleccionar bancos y buscar texto. Los filtros por 
 2. Si vas a publicarlo en GitHub Pages, actualiza `preguntas/manifest.json` para incluir los nuevos CSV.
 3. Sube los cambios al repositorio.
 
-### Jerarquía por nombre de archivo
+### Jerarquía por carpetas
 
-El visor puede deducir una jerarquía desde el nombre del archivo, con una idea parecida a las clases compuestas de Tailwind: cada parte del nombre aporta contexto.
-
-Usa `__` para separar niveles de jerarquía, `_` para separar palabras dentro de un nivel y `_banco` como marcador antes de la parte técnica del archivo:
-
-```text
-nivel_1__nivel_2__nivel_3_banco_123.csv
-```
+El visor deduce la jerarquía del banco a partir de las carpetas dentro de `preguntas/` y del nombre del archivo CSV.
 
 Por ejemplo:
 
 ```text
-administrativo__ley_39_2015__procedimiento_comun_banco_2604.csv
+preguntas/
+  CE/
+    preliminar_banco_180_editorial_v2.csv
+    titulo_i_banco_628_editorial_v2.csv
+  EACV/
+    titulo_i_banco_168.csv
+  Ley 5 1983 Consell/
+    bloque_a_banco_880.csv
 ```
 
 Se mostrará como:
 
 ```text
-Administrativo / Ley 39 2015 / Procedimiento Comun
+CE / Preliminar
+CE / Titulo I
+EACV / Titulo I
+Ley 5 1983 Consell / Bloque A
 ```
 
-En el selector del visor, los niveles superiores aparecen como opciones padre. Si seleccionas `Administrativo`, se cargan todos los bancos que cuelgan de ese nivel; si seleccionas `Ley 39 2015`, solo se cargan sus hijos.
+En el selector del visor, las carpetas con varios bancos aparecen como opciones padre. Si seleccionas `CE (todos)`, se cargan todos los bancos que cuelgan de `preguntas/CE/`.
 
-Los archivos antiguos sin `__` siguen funcionando: todo lo que aparece antes de `_banco` se muestra como un único nivel.
+El nombre del archivo se interpreta hasta `_banco`; lo que aparece después se considera parte técnica del archivo. Si un archivo necesita más niveles internos, puede usar `__` dentro del nombre, por ejemplo `titulo_preliminar__capitulos_i_ii_banco_352.csv`.
 
 Si quieres forzar un nombre distinto sin cambiar el archivo, añade una propiedad `title` a su entrada en `preguntas/manifest.json`. Si quieres forzar la jerarquía, añade `hierarchy` como lista de textos.
 

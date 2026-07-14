@@ -127,7 +127,7 @@
     <p>El contenido de las preguntas no se cobrará nunca; OpenOpo.es podrá cobrar por herramientas, ordenación, organización o servicios añadidos sobre ese contenido.</p>
   </section>
 
-  <div class="top-actions">
+  <div class="top-actions hidden" id="proActions">
     <button class="primary" id="random">Pregunta aleatoria</button>
   </div>
 
@@ -224,7 +224,7 @@
 
   const $ = id => document.getElementById(id);
   const els = {
-    random:$("random"),
+    random:$("random"), proActions:$("proActions"),
     level:$("level"), bank:$("bank"), article:$("article"), difficulty:$("difficulty"),
     family:$("family"), task:$("task"), search:$("search"),
     questionCount:$("questionCount"),
@@ -304,22 +304,26 @@
     const emitted=new Set();
     for(const file of sorted) {
       const hierarchy=bankHierarchy(file);
+      let visibleParentDepth=0;
       for(let level=1; level<hierarchy.length; level++) {
         const parts=hierarchy.slice(0,level);
         const key=hierarchyKey(parts);
-        if(emitted.has(key) || groupCounts.get(key)<2) continue;
-        emitted.add(key);
-        options.push({
-          value:`${GROUP_PREFIX}${key}`,
-          label:`${parts[parts.length-1]} (todos)`,
-          depth:level-1,
-          title:parts.join(" / "),
-        });
+        if(groupCounts.get(key)>=2) {
+          visibleParentDepth=level;
+          if(emitted.has(key)) continue;
+          emitted.add(key);
+          options.push({
+            value:`${GROUP_PREFIX}${key}`,
+            label:`${parts[parts.length-1]} (todos)`,
+            depth:level-1,
+            title:parts.join(" / "),
+          });
+        }
       }
       options.push({
         value:file.path,
-        label:hierarchy[hierarchy.length-1] || bankTitle(file),
-        depth:Math.max(0,hierarchy.length-1),
+        label:visibleParentDepth ? hierarchy[hierarchy.length-1] : bankTitle(file),
+        depth:visibleParentDepth ? Math.max(0,hierarchy.length-1) : 0,
         title:file.path,
       });
     }
@@ -436,6 +440,15 @@
     state.selected=null; state.revealed=false;
   }
 
+  function shuffle(items) {
+    const copy=[...items];
+    for(let i=copy.length-1;i>0;i--) {
+      const j=Math.floor(Math.random()*(i+1));
+      [copy[i],copy[j]]=[copy[j],copy[i]];
+    }
+    return copy;
+  }
+
   async function scanFiles() {
     els.loading.textContent="Escaneando carpeta...";
     try {
@@ -507,13 +520,13 @@
   function applyFilters(preserve=true) {
     const current=preserve && state.filtered[state.index] ? state.filtered[state.index].id : null;
     const query=norm(els.search.value);
-    state.filtered=state.rows.filter(q=>{
+    state.filtered=shuffle(state.rows.filter(q=>{
       if(query) {
         const hay=norm([q.id,q.file,q.statement,...Object.values(q.options),q.explanation,q.source].join(" "));
         if(!hay.includes(query)) return false;
       }
       return true;
-    });
+    }));
     const found=current ? state.filtered.findIndex(q=>q.id===current) : -1;
     state.index=found>=0 ? found : 0;
     resetQuestion();
@@ -600,6 +613,7 @@
     }
   });
 
+  els.proActions.classList.toggle("hidden",!isProMode);
   els.status.classList.toggle("hidden",!isProMode);
   scanFiles();
 })();

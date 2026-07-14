@@ -31,13 +31,20 @@ def pretty_part(value: str) -> str:
 
 
 def bank_hierarchy(path: Path) -> list[str]:
+    try:
+        relative = path.relative_to(QUESTIONS_DIR)
+    except ValueError:
+        relative = path
+
+    folder_parts = [pretty_part(part) for part in relative.parts[:-1]]
     stem = path.stem
     raw_title = stem.split(BANK_NAME_MARKER, 1)[0]
-    return [
+    file_parts = [
         pretty_part(part)
         for part in raw_title.split(HIERARCHY_SEPARATOR)
         if part.strip()
     ]
+    return folder_parts + file_parts
 
 
 def bank_title(path: Path) -> str:
