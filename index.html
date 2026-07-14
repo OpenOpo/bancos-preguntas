@@ -18,7 +18,6 @@
     button,select,input { font:inherit; }
     .app { max-width:1200px; margin:auto; padding:20px; }
     h1 { margin:0 0 6px; font-size:clamp(1.5rem,3vw,2.1rem); }
-    .subtitle { margin:0 0 18px; color:var(--muted); }
     .brand-band {
       display:grid; gap:6px; margin:0 0 14px; padding:12px 14px;
       border:1px solid #bdd1ee; border-radius:10px; background:#f7fbff;
@@ -121,7 +120,6 @@
 <body>
 <main class="app">
   <h1>Visor de bancos de preguntas</h1>
-  <p class="subtitle">Carga las preguntas desde los CSV publicados en la carpeta <code>preguntas</code>.</p>
 
   <section class="brand-band" aria-label="OpenOpo">
     <p><strong>OpenOpo.es</strong> es un proyecto de contenido accesible, abierto y gratuito para opositores.</p>
@@ -133,7 +131,7 @@
     <button class="primary" id="random">Pregunta aleatoria</button>
   </div>
 
-  <div class="status">
+  <div class="status hidden" id="status">
     <span class="pill"><strong id="questionCount">0</strong> preguntas cargadas</span>
     <span class="pill"><strong id="visibleCount">0</strong> visibles</span>
     <span class="pill" id="loadingStatus">Preparando...</span>
@@ -143,7 +141,7 @@
     <section class="panel question">
       <div id="empty" class="empty">No hay preguntas cargadas.</div>
       <div id="content" class="hidden">
-        <div class="meta" id="meta"></div>
+        <div class="meta hidden" id="meta"></div>
         <h2 class="statement" id="statement"></h2>
         <div class="options" id="options"></div>
         <div class="answer" id="answer" hidden>
@@ -182,6 +180,10 @@
           <input id="search" type="search" placeholder="Enunciado, opción o explicación">
         </div>
         <div class="field">
+          <label for="level">Nivel</label>
+          <select id="level"></select>
+        </div>
+        <div class="field">
           <label for="bank">Banco / archivo</label>
           <select id="bank"><option value="__all__">Todos los bancos</option></select>
         </div>
@@ -217,14 +219,16 @@
   const GROUP_PREFIX = "__group__:";
   const BANK_LEVELS = ["APF","C2","C1","B","A2","A1"];
   const CURRENT_BANK_LEVEL = "C1";
+  const params = new URLSearchParams(window.location.search);
+  const isProMode = ["1","true","pro"].includes(String(params.get("pro") || params.get("modo") || "").toLowerCase());
 
   const $ = id => document.getElementById(id);
   const els = {
     random:$("random"),
-    bank:$("bank"), article:$("article"), difficulty:$("difficulty"),
+    level:$("level"), bank:$("bank"), article:$("article"), difficulty:$("difficulty"),
     family:$("family"), task:$("task"), search:$("search"),
     questionCount:$("questionCount"),
-    visibleCount:$("visibleCount"), loading:$("loadingStatus"),
+    visibleCount:$("visibleCount"), loading:$("loadingStatus"), status:$("status"),
     empty:$("empty"), content:$("content"), meta:$("meta"),
     statement:$("statement"), options:$("options"), answer:$("answer"),
     answerTitle:$("answerTitle"), explanation:$("explanation"), source:$("source"),
@@ -274,16 +278,12 @@
     return bankHierarchy(file).join(" / ");
   }
 
-  function selectorHierarchy(file) {
-    return [CURRENT_BANK_LEVEL, ...bankHierarchy(file)];
-  }
-
   function hierarchyKey(parts) {
     return parts.map(norm).join("/");
   }
 
   function fileMatchesGroup(file, groupKey) {
-    const fileKey=hierarchyKey(selectorHierarchy(file));
+    const fileKey=hierarchyKey(bankHierarchy(file));
     return fileKey===groupKey || fileKey.startsWith(`${groupKey}/`);
   }
 
@@ -291,56 +291,52 @@
     const options=[];
     const sorted=[...files].sort((a,b)=>bankTitle(a).localeCompare(bankTitle(b),"es",{numeric:true}));
     const groupCounts=new Map();
-    const groupLabels=new Map();
 
     for(const file of sorted) {
-      const hierarchy=selectorHierarchy(file);
+      const hierarchy=bankHierarchy(file);
       for(let level=1; level<hierarchy.length; level++) {
         const parts=hierarchy.slice(0,level);
         const key=hierarchyKey(parts);
         groupCounts.set(key,(groupCounts.get(key) || 0)+1);
-        groupLabels.set(key,parts);
       }
     }
 
     const emitted=new Set();
-    for(const bankLevel of BANK_LEVELS) {
-      const levelKey=hierarchyKey([bankLevel]);
-      const available=groupCounts.has(levelKey);
-      options.push({
-        value:available ? `${GROUP_PREFIX}${levelKey}` : `__disabled__:${levelKey}`,
-        label:available ? `${bankLevel} (todos)` : `${bankLevel} (no disponible)`,
-        depth:0,
-        title:bankLevel,
-        disabled:!available,
-      });
-      if(!available) continue;
-
-      for(const file of sorted) {
-        const hierarchy=selectorHierarchy(file);
-        if(hierarchy[0]!==bankLevel) continue;
-        for(let level=2; level<hierarchy.length; level++) {
-          const parts=hierarchy.slice(0,level);
-          const key=hierarchyKey(parts);
-          if(emitted.has(key) || groupCounts.get(key)<2) continue;
-          emitted.add(key);
-          options.push({
-            value:`${GROUP_PREFIX}${key}`,
-            label:`${parts[parts.length-1]} (todos)`,
-            depth:level-1,
-            title:parts.join(" / "),
-          });
-        }
+    for(const file of sorted) {
+      const hierarchy=bankHierarchy(file);
+      for(let level=1; level<hierarchy.length; level++) {
+        const parts=hierarchy.slice(0,level);
+        const key=hierarchyKey(parts);
+        if(emitted.has(key) || groupCounts.get(key)<2) continue;
+        emitted.add(key);
         options.push({
-          value:file.path,
-          label:hierarchy[hierarchy.length-1] || bankTitle(file),
-          depth:Math.max(0,hierarchy.length-1),
-          title:file.path,
+          value:`${GROUP_PREFIX}${key}`,
+          label:`${parts[parts.length-1]} (todos)`,
+          depth:level-1,
+          title:parts.join(" / "),
         });
       }
+      options.push({
+        value:file.path,
+        label:hierarchy[hierarchy.length-1] || bankTitle(file),
+        depth:Math.max(0,hierarchy.length-1),
+        title:file.path,
+      });
     }
 
     return options;
+  }
+
+  function fillLevelOptions() {
+    els.level.replaceChildren();
+    for(const level of BANK_LEVELS) {
+      const option=document.createElement("option");
+      option.value=level;
+      option.textContent=level === CURRENT_BANK_LEVEL ? level : `${level} (no disponible)`;
+      option.disabled=level !== CURRENT_BANK_LEVEL;
+      els.level.appendChild(option);
+    }
+    els.level.value=CURRENT_BANK_LEVEL;
   }
 
   function detectDelimiter(text) {
@@ -444,6 +440,7 @@
       const payload=await response.json();
       state.files=payload.files || [];
 
+      fillLevelOptions();
       els.bank.innerHTML='<option value="__all__">Todos los bancos</option>';
       for(const item of buildBankOptions(state.files)) {
         const option=document.createElement("option");
@@ -526,8 +523,10 @@
   }
 
   function render() {
-    els.questionCount.textContent=state.rows.length;
-    els.visibleCount.textContent=state.filtered.length;
+    if(isProMode) {
+      els.questionCount.textContent=state.rows.length;
+      els.visibleCount.textContent=state.filtered.length;
+    }
     const q=current();
     els.empty.classList.toggle("hidden",Boolean(q));
     els.content.classList.toggle("hidden",!q);
@@ -536,12 +535,15 @@
       return;
     }
 
-    els.meta.replaceChildren();
-    [
-      q.bankTitle, q.article && `Art. ${q.article}${q.paragraph ? "."+q.paragraph : ""}`,
-      q.difficulty && `Dificultad ${q.difficulty}`, q.family && pretty(q.family),
-      q.task && pretty(q.task), q.id
-    ].filter(Boolean).forEach(x=>els.meta.appendChild(tag(x)));
+    els.meta.classList.toggle("hidden",!isProMode);
+    if(isProMode) {
+      els.meta.replaceChildren();
+      [
+        q.bankTitle, q.article && `Art. ${q.article}${q.paragraph ? "."+q.paragraph : ""}`,
+        q.difficulty && `Dificultad ${q.difficulty}`, q.family && pretty(q.family),
+        q.task && pretty(q.task), q.id
+      ].filter(Boolean).forEach(x=>els.meta.appendChild(tag(x)));
+    }
 
     els.statement.textContent=q.statement;
     els.options.replaceChildren();
@@ -594,6 +596,7 @@
     }
   });
 
+  els.status.classList.toggle("hidden",!isProMode);
   scanFiles();
 })();
 </script>
