@@ -180,8 +180,8 @@
           <input id="search" type="search" placeholder="Enunciado, opción o explicación">
         </div>
         <div class="field">
-          <label for="level">Nivel</label>
-          <select id="level"></select>
+          <label class="field-label" for="level"><span>Nivel</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+          <select class="premium-select" id="level"><option value="">Ver opciones premium</option></select>
         </div>
         <div class="field">
           <label for="bank">Banco / archivo</label>
@@ -329,14 +329,18 @@
 
   function fillLevelOptions() {
     els.level.replaceChildren();
+    const placeholder=document.createElement("option");
+    placeholder.value="";
+    placeholder.textContent="Ver opciones premium";
+    els.level.appendChild(placeholder);
     for(const level of BANK_LEVELS) {
       const option=document.createElement("option");
       option.value=level;
-      option.textContent=level === CURRENT_BANK_LEVEL ? level : `${level} (no disponible)`;
-      option.disabled=level !== CURRENT_BANK_LEVEL;
+      option.textContent=level;
+      option.disabled=true;
       els.level.appendChild(option);
     }
-    els.level.value=CURRENT_BANK_LEVEL;
+    els.level.value="";
   }
 
   function detectDelimiter(text) {
