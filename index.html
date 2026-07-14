@@ -245,7 +245,9 @@
     return String(value || "").replace(/_/g," ").trim().split(/\s+/).filter(Boolean)
       .map(word=>{
         const lower=word.toLowerCase();
-        return uppercaseWords.has(lower) ? lower.toUpperCase() : lower.replace(/^\w/,c=>c.toUpperCase());
+        if(uppercaseWords.has(lower)) return lower.toUpperCase();
+        const letters=Array.from(lower);
+        return letters.length ? letters[0].toUpperCase()+letters.slice(1).join("") : "";
       }).join(" ");
   }
 
@@ -326,18 +328,23 @@
     })).filter(q=>q.statement && ["A","B","C","D"].includes(q.correct));
   }
 
-  function unique(values, numeric=false) {
-    return [...new Set(values.filter(Boolean))].sort((a,b)=>
-      numeric ? Number(a)-Number(b) : String(a).localeCompare(String(b),"es",{numeric:true})
+  function uniqueOptions(values, {numeric=false, normalizedValue=false}={}) {
+    const options=new Map();
+    for(const value of values.filter(Boolean)) {
+      const key=normalizedValue ? norm(value) : String(value);
+      if(!options.has(key)) options.set(key,{value:key,label:String(value)});
+    }
+    return [...options.values()].sort((a,b)=>
+      numeric ? Number(a.label)-Number(b.label) : a.label.localeCompare(b.label,"es",{numeric:true})
     );
   }
 
-  function fill(select, values, label, numeric=false) {
+  function fill(select, values, label, config={}) {
     const current=select.value;
     select.innerHTML=`<option value="">${label}</option>`;
-    for(const value of unique(values,numeric)) {
+    for(const item of uniqueOptions(values,config)) {
       const option=document.createElement("option");
-      option.value=value; option.textContent=pretty(value); select.appendChild(option);
+      option.value=item.value; option.textContent=pretty(item.label); select.appendChild(option);
     }
     if([...select.options].some(o=>o.value===current)) select.value=current;
   }
@@ -394,10 +401,10 @@
       }
       state.rows=rows;
       state.index=0;
-      fill(els.article,rows.map(q=>q.article),"Todos",true);
-      fill(els.difficulty,rows.map(q=>q.difficulty),"Todas",true);
-      fill(els.family,rows.map(q=>q.family),"Todas");
-      fill(els.task,rows.map(q=>q.task),"Todos");
+      fill(els.article,rows.map(q=>q.article),"Todos",{numeric:true});
+      fill(els.difficulty,rows.map(q=>q.difficulty),"Todas",{numeric:true});
+      fill(els.family,rows.map(q=>q.family),"Todas",{normalizedValue:true});
+      fill(els.task,rows.map(q=>q.task),"Todos",{normalizedValue:true});
       applyFilters(false);
       els.loading.textContent="Listo";
     } catch(error) {
@@ -414,8 +421,8 @@
     state.filtered=state.rows.filter(q=>{
       if(els.article.value && q.article!==els.article.value) return false;
       if(els.difficulty.value && q.difficulty!==els.difficulty.value) return false;
-      if(els.family.value && q.family!==els.family.value) return false;
-      if(els.task.value && q.task!==els.task.value) return false;
+      if(els.family.value && norm(q.family)!==els.family.value) return false;
+      if(els.task.value && norm(q.task)!==els.task.value) return false;
       if(query) {
         const hay=norm([q.id,q.file,q.statement,...Object.values(q.options),q.explanation,q.source].join(" "));
         if(!hay.includes(query)) return false;
