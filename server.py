@@ -101,7 +101,7 @@ def main() -> None:
     QUESTIONS_DIR.mkdir(exist_ok=True)
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     print("")
-    print("Visor local de preguntas GVA C1")
+    print("Visor local de bancos de preguntas")
     print(f"Carpeta escaneada: {QUESTIONS_DIR}")
     print(f"URL: http://{HOST}:{PORT}")
     print("Añade o elimina archivos CSV en preguntas/ y pulsa «Volver a escanear» en la web.")

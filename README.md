@@ -4,7 +4,7 @@ Banco abierto de preguntas tipo test para la preparación de oposiciones, dispon
 
 ## Visor web
 
-Este repositorio incluye un visor estático de preguntas para oposiciones GVA C1. Puede publicarse directamente con GitHub Pages porque no necesita base de datos ni backend: el navegador carga `index.html`, lee `preguntas/manifest.json` y descarga los CSV de `preguntas/` bajo demanda.
+Este repositorio incluye un visor estático de bancos de preguntas. Puede publicarse directamente con GitHub Pages porque no necesita base de datos ni backend: el navegador carga `index.html`, lee `preguntas/manifest.json` y descarga los CSV de `preguntas/` bajo demanda.
 
 ### Ejecutar en local
 
