@@ -338,13 +338,13 @@
     els.level.replaceChildren();
     const placeholder=document.createElement("option");
     placeholder.value="";
-    placeholder.textContent="Ver opciones premium";
+    placeholder.textContent=isProMode ? "Todos" : "Ver opciones premium";
     els.level.appendChild(placeholder);
     for(const level of BANK_LEVELS) {
       const option=document.createElement("option");
       option.value=level;
       option.textContent=level;
-      option.disabled=true;
+      option.disabled=!isProMode;
       els.level.appendChild(option);
     }
     els.level.value="";
@@ -506,10 +506,10 @@
       }
       state.rows=rows;
       state.index=0;
-      fill(els.article,rows.map(q=>q.article),"Ver opciones premium",{numeric:true,disabledOptions:true});
-      fill(els.difficulty,rows.map(q=>q.difficulty),"Ver opciones premium",{numeric:true,disabledOptions:true});
-      fill(els.family,rows.map(q=>q.family),"Ver opciones premium",{normalizedValue:true,disabledOptions:true});
-      fill(els.task,rows.map(q=>q.task),"Ver opciones premium",{normalizedValue:true,disabledOptions:true});
+      fill(els.article,rows.map(q=>q.article),isProMode ? "Todos" : "Ver opciones premium",{numeric:true,disabledOptions:!isProMode});
+      fill(els.difficulty,rows.map(q=>q.difficulty),isProMode ? "Todas" : "Ver opciones premium",{numeric:true,disabledOptions:!isProMode});
+      fill(els.family,rows.map(q=>q.family),isProMode ? "Todas" : "Ver opciones premium",{normalizedValue:true,disabledOptions:!isProMode});
+      fill(els.task,rows.map(q=>q.task),isProMode ? "Todos" : "Ver opciones premium",{normalizedValue:true,disabledOptions:!isProMode});
       applyFilters(false);
       els.loading.textContent="Listo";
     } catch(error) {
@@ -524,6 +524,10 @@
     const current=preserve && state.filtered[state.index] ? state.filtered[state.index].id : null;
     const query=norm(els.search.value);
     state.filtered=shuffle(state.rows.filter(q=>{
+      if(isProMode && els.article.value && q.article!==els.article.value) return false;
+      if(isProMode && els.difficulty.value && q.difficulty!==els.difficulty.value) return false;
+      if(isProMode && els.family.value && norm(q.family)!==els.family.value) return false;
+      if(isProMode && els.task.value && norm(q.task)!==els.task.value) return false;
       if(query) {
         const hay=norm([q.id,q.file,q.statement,...Object.values(q.options),q.explanation,q.source].join(" "));
         if(!hay.includes(query)) return false;
