@@ -1,12 +1,12 @@
 {
     "files":  [
                   {
-                      "path":  "ce__articulos_1_9_banco_180_editorial_v2.csv",
-                      "name":  "ce__articulos_1_9_banco_180_editorial_v2.csv",
-                      "title":  "CE / Articulos 1 9",
+                      "path":  "ce__preliminar_banco_180_editorial_v2.csv",
+                      "name":  "ce__preliminar_banco_180_editorial_v2.csv",
+                      "title":  "CE / Preliminar",
                       "hierarchy":  [
                                         "CE",
-                                        "Articulos 1 9"
+                                        "Preliminar"
                                     ],
                       "size_bytes":  146894
                   },
