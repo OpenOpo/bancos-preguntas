@@ -591,7 +591,9 @@
   function go(index) {
     if(!state.filtered.length) return;
     state.index=Math.max(0,Math.min(index,state.filtered.length-1));
-    resetQuestion(); render(); window.scrollTo({top:0,behavior:"smooth"});
+    resetQuestion();
+    render();
+    els.statement.scrollIntoView({behavior:"smooth",block:"start"});
   }
 
   els.random.onclick=()=>state.filtered.length && go(Math.floor(Math.random()*state.filtered.length));
