@@ -203,6 +203,8 @@
 
   const DATA_DIR = "preguntas";
   const MANIFEST_URL = `${DATA_DIR}/manifest.json`;
+  const BANK_NAME_MARKER = "_banco";
+  const HIERARCHY_SEPARATOR = "__";
 
   const $ = id => document.getElementById(id);
   const els = {
@@ -239,8 +241,24 @@
   }
 
   function pretty(value) {
-    return String(value || "").replace(/_/g," ")
-      .replace(/\b\w/g,c=>c.toUpperCase());
+    const uppercaseWords=new Set(["ce","eacv","lo","i","ii","iii","iv","v","vi","vii","viii","ix","x"]);
+    return String(value || "").replace(/_/g," ").trim().split(/\s+/).filter(Boolean)
+      .map(word=>{
+        const lower=word.toLowerCase();
+        return uppercaseWords.has(lower) ? lower.toUpperCase() : lower.replace(/^\w/,c=>c.toUpperCase());
+      }).join(" ");
+  }
+
+  function bankHierarchy(file) {
+    if(Array.isArray(file?.hierarchy) && file.hierarchy.length) return file.hierarchy;
+    const name=String(file?.name || file?.path || "").split("/").pop().replace(/\.csv$/i,"");
+    const base=name.split(BANK_NAME_MARKER)[0] || name;
+    return base.split(HIERARCHY_SEPARATOR).filter(Boolean).map(pretty);
+  }
+
+  function bankTitle(file) {
+    if(file?.title) return file.title;
+    return bankHierarchy(file).join(" / ");
   }
 
   function detectDelimiter(text) {
@@ -277,7 +295,9 @@
     return -1;
   }
 
-  function mapCsv(matrix, filePath) {
+  function mapCsv(matrix, file) {
+    const filePath=file.path;
+    const title=bankTitle(file);
     if(matrix.length<2) return [];
     const headers=matrix[0];
     const idx={};
@@ -291,6 +311,7 @@
     return matrix.slice(1).map((row,n)=>({
       id:value(row,"id") || `${filePath}:${n+2}`,
       file:filePath,
+      bankTitle:title,
       article:value(row,"article"),
       paragraph:value(row,"paragraph"),
       difficulty:value(row,"difficulty"),
@@ -334,13 +355,13 @@
       state.files=payload.files || [];
       els.fileCount.textContent=state.files.length;
       els.fileList.innerHTML=state.files.length
-        ? state.files.map(f=>`<div class="file-row">${f.path}<br><span class="small">${Math.round(f.size_bytes/1024)} KB</span></div>`).join("")
+        ? state.files.map(f=>`<div class="file-row"><strong>${bankTitle(f)}</strong><br><span class="small">${f.path} · ${Math.round(f.size_bytes/1024)} KB</span></div>`).join("")
         : `<div class="error">No hay CSV en la carpeta preguntas.</div>`;
 
       els.bank.innerHTML='<option value="__all__">Todos los bancos</option>';
       for(const file of state.files) {
         const option=document.createElement("option");
-        option.value=file.path; option.textContent=file.path; els.bank.appendChild(option);
+        option.value=file.path; option.textContent=bankTitle(file); option.title=file.path; els.bank.appendChild(option);
       }
 
       state.rowsByFile.clear();
@@ -355,7 +376,7 @@
     if(state.rowsByFile.has(file.path)) return state.rowsByFile.get(file.path);
     const response=await fetch(`${DATA_DIR}/${file.path}`,{cache:"no-store"});
     if(!response.ok) throw new Error(`No se pudo cargar ${file.path}`);
-    const rows=mapCsv(parseCsv(await response.text()),file.path);
+    const rows=mapCsv(parseCsv(await response.text()),file);
     state.rowsByFile.set(file.path,rows);
     return rows;
   }
@@ -427,7 +448,7 @@
 
     els.meta.replaceChildren();
     [
-      q.file, q.article && `Art. ${q.article}${q.paragraph ? "."+q.paragraph : ""}`,
+      q.bankTitle, q.article && `Art. ${q.article}${q.paragraph ? "."+q.paragraph : ""}`,
       q.difficulty && `Dificultad ${q.difficulty}`, q.family && pretty(q.family),
       q.task && pretty(q.task), q.id
     ].filter(Boolean).forEach(x=>els.meta.appendChild(tag(x)));

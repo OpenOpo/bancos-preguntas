@@ -34,6 +34,32 @@ El servidor local se abre en `http://127.0.0.1:8000` y sirve `preguntas/manifest
 2. Si vas a publicarlo en GitHub Pages, actualiza `preguntas/manifest.json` para incluir los nuevos CSV.
 3. Sube los cambios al repositorio.
 
+### Jerarquía por nombre de archivo
+
+El visor puede deducir una jerarquía desde el nombre del archivo, con una idea parecida a las clases compuestas de Tailwind: cada parte del nombre aporta contexto.
+
+Usa `__` para separar niveles de jerarquía, `_` para separar palabras dentro de un nivel y `_banco` como marcador antes de la parte técnica del archivo:
+
+```text
+nivel_1__nivel_2__nivel_3_banco_123.csv
+```
+
+Por ejemplo:
+
+```text
+administrativo__ley_39_2015__procedimiento_comun_banco_2604.csv
+```
+
+Se mostrará como:
+
+```text
+Administrativo / Ley 39 2015 / Procedimiento Comun
+```
+
+Los archivos antiguos sin `__` siguen funcionando: todo lo que aparece antes de `_banco` se muestra como un único nivel.
+
+Si quieres forzar un nombre distinto sin cambiar el archivo, añade una propiedad `title` a su entrada en `preguntas/manifest.json`. Si quieres forzar la jerarquía, añade `hierarchy` como lista de textos.
+
 Cada CSV debe incluir columnas equivalentes a `statement`, `option_a`, `option_b`, `option_c`, `option_d` y `correct_option`. El visor también reconoce alias en castellano como `enunciado`, `opcion_a`, `respuesta_correcta`, `explicacion`, `articulo`, `dificultad`, `familia` y `tipo`.
 
 ### Publicación en GitHub Pages

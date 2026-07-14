@@ -15,6 +15,32 @@ APP_DIR = Path(__file__).resolve().parent
 QUESTIONS_DIR = APP_DIR / "preguntas"
 HOST = "127.0.0.1"
 PORT = 8000
+BANK_NAME_MARKER = "_banco"
+HIERARCHY_SEPARATOR = "__"
+UPPERCASE_WORDS = {"ce", "eacv", "lo", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x"}
+
+
+def pretty_part(value: str) -> str:
+    words = value.replace("_", " ").strip().split()
+    pretty_words = []
+    for word in words:
+        lower = word.lower()
+        pretty_words.append(lower.upper() if lower in UPPERCASE_WORDS else word.capitalize())
+    return " ".join(pretty_words)
+
+
+def bank_hierarchy(path: Path) -> list[str]:
+    stem = path.stem
+    raw_title = stem.split(BANK_NAME_MARKER, 1)[0]
+    return [
+        pretty_part(part)
+        for part in raw_title.split(HIERARCHY_SEPARATOR)
+        if part.strip()
+    ]
+
+
+def bank_title(path: Path) -> str:
+    return " / ".join(bank_hierarchy(path))
 
 
 def discover_csv_files() -> list[dict]:
@@ -28,6 +54,8 @@ def discover_csv_files() -> list[dict]:
             {
                 "path": relative,
                 "name": path.name,
+                "title": bank_title(path),
+                "hierarchy": bank_hierarchy(path),
                 "size_bytes": path.stat().st_size,
             }
         )
