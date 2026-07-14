@@ -4,7 +4,7 @@ Banco abierto de preguntas tipo test para la preparación de oposiciones, dispon
 
 ## OpenOpo.es
 
-Este banco forma parte del proyecto **OpenOpo.es**, una iniciativa para hacer más accesible la preparación de oposiciones mediante contenido abierto, gratuito y reutilizable para fines no comerciales.
+Este banco forma parte del proyecto **OpenOpo.es**, una iniciativa que nace de **Iván Barreda, opositor**, para hacer más accesible la preparación de oposiciones mediante contenido abierto, gratuito y reutilizable para fines no comerciales.
 
 Los valores del proyecto son:
 
@@ -65,7 +65,7 @@ También puede ejecutarse directamente con Python:
 python server.py
 ```
 
-El servidor local se abre en `http://127.0.0.1:8000` y sirve `preguntas/manifest.json` dinámicamente, por lo que permite añadir o quitar CSV durante el trabajo local y pulsar "Volver a escanear" en el visor.
+El servidor local se abre en `http://127.0.0.1:8000` y sirve `preguntas/manifest.json` dinámicamente, por lo que permite añadir o quitar CSV durante el trabajo local y recargar la página.
 
 La versión pública permite seleccionar bancos y buscar texto. Los filtros por artículo, dificultad, familia y tipo quedan reservados para la versión premium enlazada desde el visor.
 

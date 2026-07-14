@@ -31,10 +31,7 @@
       background:var(--panel); border:1px solid var(--line);
       border-radius:14px; box-shadow:0 8px 24px rgba(20,35,70,.07);
     }
-    .toolbar {
-      display:grid; grid-template-columns:2fr repeat(4,1fr) auto;
-      gap:10px; padding:14px; margin-bottom:14px;
-    }
+    .filters-panel { display:grid; gap:10px; }
     .field { display:flex; flex-direction:column; gap:5px; min-width:0; }
     label {
       font-size:.76rem; font-weight:750; color:var(--muted);
@@ -72,7 +69,7 @@
       background:white; border:1px solid var(--line); border-radius:999px;
       padding:6px 10px; font-size:.9rem;
     }
-    .layout { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:14px; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:14px; }
     .question { padding:22px; min-height:520px; }
     .meta { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:15px; }
     .tag {
@@ -108,22 +105,15 @@
     aside h2 { font-size:1rem; margin:0 0 10px; }
     aside a { color:var(--primary); text-decoration:none; font-weight:650; }
     aside a:hover { text-decoration:underline; }
-    .nav { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .file-list { max-height:260px; overflow:auto; font-size:.88rem; }
-    .file-row {
-      padding:7px 0; border-bottom:1px solid #edf0f4; overflow-wrap:anywhere;
-    }
     .empty { padding:50px 20px; text-align:center; color:var(--muted); }
     .hidden { display:none; }
     .error { color:var(--bad); background:var(--bad-soft); padding:10px; border-radius:8px; }
     .small { font-size:.83rem; color:var(--muted); line-height:1.4; }
     @media(max-width:900px) {
-      .toolbar { grid-template-columns:1fr 1fr; }
       .layout { grid-template-columns:1fr; }
     }
     @media(max-width:560px) {
       .app { padding:11px; }
-      .toolbar { grid-template-columns:1fr; }
       .question { padding:15px; }
     }
   </style>
@@ -135,44 +125,15 @@
 
   <section class="brand-band" aria-label="OpenOpo">
     <p><strong>OpenOpo.es</strong> es un proyecto de contenido accesible, abierto y gratuito para opositores.</p>
+    <p>Nace de <strong>Iván Barreda</strong>, opositor, con la intención de ordenar y compartir materiales útiles para estudiar.</p>
     <p>El contenido de las preguntas no se cobrará nunca; OpenOpo.es podrá cobrar por herramientas, ordenación, organización o servicios añadidos sobre ese contenido.</p>
   </section>
 
   <div class="top-actions">
-    <button class="primary" id="rescan">Volver a escanear la carpeta</button>
-    <button id="loadAll">Cargar todos los bancos</button>
-    <button id="random">Pregunta aleatoria</button>
+    <button class="primary" id="random">Pregunta aleatoria</button>
   </div>
 
-  <section class="panel toolbar">
-    <div class="field">
-      <label for="bank">Banco / archivo</label>
-      <select id="bank"><option value="__all__">Todos los bancos</option></select>
-    </div>
-    <div class="field">
-      <label class="field-label" for="article"><span>Artículo</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
-      <select class="premium-select" id="article"><option value="">Ver opciones premium</option></select>
-    </div>
-    <div class="field">
-      <label class="field-label" for="difficulty"><span>Dificultad</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
-      <select class="premium-select" id="difficulty"><option value="">Ver opciones premium</option></select>
-    </div>
-    <div class="field">
-      <label class="field-label" for="family"><span>Familia</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
-      <select class="premium-select" id="family"><option value="">Ver opciones premium</option></select>
-    </div>
-    <div class="field">
-      <label class="field-label" for="task"><span>Tipo</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
-      <select class="premium-select" id="task"><option value="">Ver opciones premium</option></select>
-    </div>
-    <div class="field">
-      <label for="search">Buscar</label>
-      <input id="search" type="search" placeholder="Enunciado, opción o explicación">
-    </div>
-  </section>
-
   <div class="status">
-    <span class="pill"><strong id="fileCount">0</strong> bancos encontrados</span>
     <span class="pill"><strong id="questionCount">0</strong> preguntas cargadas</span>
     <span class="pill"><strong id="visibleCount">0</strong> visibles</span>
     <span class="pill" id="loadingStatus">Preparando...</span>
@@ -199,18 +160,31 @@
     </section>
 
     <aside>
-      <section class="panel">
-        <h2>Navegación</h2>
-        <div class="nav">
-          <button id="first">Primera</button>
-          <button id="last">Última</button>
+      <section class="panel filters-panel">
+        <div class="field">
+          <label class="field-label" for="article"><span>Artículo</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+          <select class="premium-select" id="article"><option value="">Ver opciones premium</option></select>
         </div>
-        <p class="small" id="counter">0 de 0</p>
-      </section>
-      <section class="panel">
-        <h2>Bancos detectados</h2>
-        <div class="file-list" id="fileList"></div>
-        <p class="small">Copia nuevos archivos dentro de <code>preguntas/</code> y actualiza <code>manifest.json</code>.</p>
+        <div class="field">
+          <label class="field-label" for="difficulty"><span>Dificultad</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+          <select class="premium-select" id="difficulty"><option value="">Ver opciones premium</option></select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="family"><span>Familia</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+          <select class="premium-select" id="family"><option value="">Ver opciones premium</option></select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="task"><span>Tipo</span><a class="premium-badge" href="https://openopo.es" target="_blank" rel="noopener">Premium</a></label>
+          <select class="premium-select" id="task"><option value="">Ver opciones premium</option></select>
+        </div>
+        <div class="field">
+          <label for="search">Buscar</label>
+          <input id="search" type="search" placeholder="Enunciado, opción o explicación">
+        </div>
+        <div class="field">
+          <label for="bank">Banco / archivo</label>
+          <select id="bank"><option value="__all__">Todos los bancos</option></select>
+        </div>
       </section>
       <section class="panel">
         <h2>Licencia y fuentes</h2>
@@ -241,19 +215,20 @@
   const BANK_NAME_MARKER = "_banco";
   const HIERARCHY_SEPARATOR = "__";
   const GROUP_PREFIX = "__group__:";
+  const BANK_LEVELS = ["APF","C2","C1","B","A2","A1"];
+  const CURRENT_BANK_LEVEL = "C1";
 
   const $ = id => document.getElementById(id);
   const els = {
-    rescan:$("rescan"), loadAll:$("loadAll"), random:$("random"),
+    random:$("random"),
     bank:$("bank"), article:$("article"), difficulty:$("difficulty"),
     family:$("family"), task:$("task"), search:$("search"),
-    fileCount:$("fileCount"), questionCount:$("questionCount"),
+    questionCount:$("questionCount"),
     visibleCount:$("visibleCount"), loading:$("loadingStatus"),
     empty:$("empty"), content:$("content"), meta:$("meta"),
     statement:$("statement"), options:$("options"), answer:$("answer"),
     answerTitle:$("answerTitle"), explanation:$("explanation"), source:$("source"),
     reveal:$("reveal"), previous:$("previous"), next:$("next"),
-    first:$("first"), last:$("last"), counter:$("counter"), fileList:$("fileList"),
   };
 
   const aliases = {
@@ -299,12 +274,16 @@
     return bankHierarchy(file).join(" / ");
   }
 
+  function selectorHierarchy(file) {
+    return [CURRENT_BANK_LEVEL, ...bankHierarchy(file)];
+  }
+
   function hierarchyKey(parts) {
     return parts.map(norm).join("/");
   }
 
   function fileMatchesGroup(file, groupKey) {
-    const fileKey=hierarchyKey(bankHierarchy(file));
+    const fileKey=hierarchyKey(selectorHierarchy(file));
     return fileKey===groupKey || fileKey.startsWith(`${groupKey}/`);
   }
 
@@ -315,7 +294,7 @@
     const groupLabels=new Map();
 
     for(const file of sorted) {
-      const hierarchy=bankHierarchy(file);
+      const hierarchy=selectorHierarchy(file);
       for(let level=1; level<hierarchy.length; level++) {
         const parts=hierarchy.slice(0,level);
         const key=hierarchyKey(parts);
@@ -325,26 +304,40 @@
     }
 
     const emitted=new Set();
-    for(const file of sorted) {
-      const hierarchy=bankHierarchy(file);
-      for(let level=1; level<hierarchy.length; level++) {
-        const parts=hierarchy.slice(0,level);
-        const key=hierarchyKey(parts);
-        if(emitted.has(key) || groupCounts.get(key)<2) continue;
-        emitted.add(key);
+    for(const bankLevel of BANK_LEVELS) {
+      const levelKey=hierarchyKey([bankLevel]);
+      const available=groupCounts.has(levelKey);
+      options.push({
+        value:available ? `${GROUP_PREFIX}${levelKey}` : `__disabled__:${levelKey}`,
+        label:available ? `${bankLevel} (todos)` : `${bankLevel} (no disponible)`,
+        depth:0,
+        title:bankLevel,
+        disabled:!available,
+      });
+      if(!available) continue;
+
+      for(const file of sorted) {
+        const hierarchy=selectorHierarchy(file);
+        if(hierarchy[0]!==bankLevel) continue;
+        for(let level=2; level<hierarchy.length; level++) {
+          const parts=hierarchy.slice(0,level);
+          const key=hierarchyKey(parts);
+          if(emitted.has(key) || groupCounts.get(key)<2) continue;
+          emitted.add(key);
+          options.push({
+            value:`${GROUP_PREFIX}${key}`,
+            label:`${parts[parts.length-1]} (todos)`,
+            depth:level-1,
+            title:parts.join(" / "),
+          });
+        }
         options.push({
-          value:`${GROUP_PREFIX}${key}`,
-          label:`${parts[parts.length-1]} (todos)`,
-          depth:level-1,
-          title:parts.join(" / "),
+          value:file.path,
+          label:hierarchy[hierarchy.length-1] || bankTitle(file),
+          depth:Math.max(0,hierarchy.length-1),
+          title:file.path,
         });
       }
-      options.push({
-        value:file.path,
-        label:hierarchy[hierarchy.length-1] || bankTitle(file),
-        depth:Math.max(0,hierarchy.length-1),
-        title:file.path,
-      });
     }
 
     return options;
@@ -450,10 +443,6 @@
       if(!response.ok) throw new Error("No se pudo consultar la carpeta.");
       const payload=await response.json();
       state.files=payload.files || [];
-      els.fileCount.textContent=state.files.length;
-      els.fileList.innerHTML=state.files.length
-        ? state.files.map(f=>`<div class="file-row"><strong>${bankTitle(f)}</strong><br><span class="small">${f.path} · ${Math.round(f.size_bytes/1024)} KB</span></div>`).join("")
-        : `<div class="error">No hay CSV en la carpeta preguntas.</div>`;
 
       els.bank.innerHTML='<option value="__all__">Todos los bancos</option>';
       for(const item of buildBankOptions(state.files)) {
@@ -461,6 +450,7 @@
         option.value=item.value;
         option.textContent=`${"\u00a0\u00a0".repeat(item.depth)}${item.label}`;
         option.title=item.title;
+        if(item.disabled) option.disabled=true;
         els.bank.appendChild(option);
       }
 
@@ -468,7 +458,7 @@
       await loadSelection("__all__");
     } catch(error) {
       els.loading.textContent="Error";
-      els.fileList.innerHTML=`<div class="error">${error.message}</div>`;
+      els.empty.textContent=error.message;
     }
   }
 
@@ -543,7 +533,6 @@
     els.content.classList.toggle("hidden",!q);
     if(!q) {
       els.empty.textContent=state.rows.length ? "No hay preguntas con estos filtros." : "No hay preguntas cargadas.";
-      els.counter.textContent="0 de 0";
       return;
     }
 
@@ -576,11 +565,8 @@
       els.source.textContent=q.source ? `Base normativa: ${q.source}` : "";
     }
 
-    els.counter.textContent=`${state.index+1} de ${state.filtered.length}`;
     els.previous.disabled=state.index<=0;
-    els.first.disabled=state.index<=0;
     els.next.disabled=state.index>=state.filtered.length-1;
-    els.last.disabled=state.index>=state.filtered.length-1;
   }
 
   function go(index) {
@@ -589,8 +575,6 @@
     resetQuestion(); render(); window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  els.rescan.onclick=scanFiles;
-  els.loadAll.onclick=()=>{ els.bank.value="__all__"; loadSelection("__all__"); };
   els.random.onclick=()=>state.filtered.length && go(Math.floor(Math.random()*state.filtered.length));
   els.bank.onchange=()=>loadSelection(els.bank.value);
   [els.article,els.difficulty,els.family,els.task].forEach(x=>x.onchange=()=>applyFilters());
@@ -599,8 +583,6 @@
   els.reveal.onclick=()=>{ state.revealed=!state.revealed; render(); };
   els.previous.onclick=()=>go(state.index-1);
   els.next.onclick=()=>go(state.index+1);
-  els.first.onclick=()=>go(0);
-  els.last.onclick=()=>go(state.filtered.length-1);
 
   document.addEventListener("keydown",event=>{
     if(["INPUT","SELECT"].includes(document.activeElement?.tagName)) return;

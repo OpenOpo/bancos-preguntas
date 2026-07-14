@@ -15,6 +15,7 @@ APP_DIR = Path(__file__).resolve().parent
 QUESTIONS_DIR = APP_DIR / "preguntas"
 HOST = "127.0.0.1"
 PORT = 8000
+MAX_PORT_ATTEMPTS = 20
 BANK_NAME_MARKER = "_banco"
 HIERARCHY_SEPARATOR = "__"
 UPPERCASE_WORDS = {"ce", "eacv", "lo", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x"}
@@ -81,6 +82,10 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, format: str, *args) -> None:
         print(f"[visor] {self.address_string()} - {format % args}")
 
+    def end_headers(self) -> None:
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
     def send_json(self, payload: object, status: int = 200) -> None:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
@@ -121,21 +126,32 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
 
-def open_browser() -> None:
-    webbrowser.open(f"http://{HOST}:{PORT}")
+def open_browser(port: int) -> None:
+    webbrowser.open(f"http://{HOST}:{port}")
+
+
+def create_server() -> tuple[ThreadingHTTPServer, int]:
+    for port in range(PORT, PORT + MAX_PORT_ATTEMPTS):
+        try:
+            return ThreadingHTTPServer((HOST, port), Handler), port
+        except OSError:
+            continue
+    raise OSError(f"No hay puertos libres entre {PORT} y {PORT + MAX_PORT_ATTEMPTS - 1}.")
 
 
 def main() -> None:
     QUESTIONS_DIR.mkdir(exist_ok=True)
-    server = ThreadingHTTPServer((HOST, PORT), Handler)
+    server, port = create_server()
     print("")
     print("Visor local de bancos de preguntas")
     print(f"Carpeta escaneada: {QUESTIONS_DIR}")
-    print(f"URL: http://{HOST}:{PORT}")
-    print("Añade o elimina archivos CSV en preguntas/ y pulsa «Volver a escanear» en la web.")
+    print(f"URL: http://{HOST}:{port}")
+    if port != PORT:
+        print(f"Nota: el puerto {PORT} estaba ocupado; se ha usado el puerto {port}.")
+    print("Añade o elimina archivos CSV en preguntas/ y recarga la página.")
     print("Pulsa Ctrl+C para detener el servidor.")
     print("")
-    threading.Timer(0.8, open_browser).start()
+    threading.Timer(0.8, open_browser, args=(port,)).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
